@@ -31,14 +31,15 @@ def createUser():
 
 @user.route('/', methods=['PUT'])
 def updateUser():
+    id: int = int(request.json.get('id'))
     username:str = request.json.get('username')
     password:str = request.json.get('password')
     oldPassword:str = request.json.get('oldPassword')
 
-    if not username and not password:
+    if not username and not password and not oldPassword and not id:
         return jsonify({"message": "Dados insuficientes"}), 400
     
-    user = UserService.updateUser(username, password, oldPassword)
+    user = UserService.updateUser(id, username, password, oldPassword)
     if user:
         return jsonify({"username":user.username}), 200
     else:
