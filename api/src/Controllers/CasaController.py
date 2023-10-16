@@ -47,3 +47,12 @@ def updateCasa(id):
     
     casa = CasaService.updateCasa(id, nome, descricao, currentUser)
     return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 200
+
+# Endpoint para o metodo DELETE de casa
+@casa.route('/<int:id>', methods=['DELETE'])
+@jwt_required()
+def deleteCasa(id):
+    currentUser = get_jwt_identity()
+
+    casa = CasaService.deleteCasa(id, currentUser)
+    return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 200
