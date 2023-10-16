@@ -27,11 +27,18 @@ def updateCasa(id: int, nome: str, descricao: str, currentUser: str) -> CasaRepo
         raise ValueError('Nome é obrigatório')
 
 
-def deleteCasa(id: int) -> CasaRepository.Casa:
+def deleteCasa(id: int, currentUser: str) -> CasaRepository.Casa:
     if not id:
         raise ValueError('Id é obrigatório')
     
-    return CasaRepository.deleteCasa(id)
+    user = UserService.getUserByUsername(currentUser)
+    if not user:
+        raise ValueError('Usuário não encontrado')
+
+    if _validaCasaUsuario(id, user.id):
+        return CasaRepository.deleteCasa(id)
+
+    
 
 def _validaCasaUsuario(casaId: int, userId: int) -> bool:
     casa = getCasaById(casaId)
