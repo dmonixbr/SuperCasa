@@ -4,8 +4,9 @@ import src.Services.UserService as UserService
 def getCasaById(id) -> CasaRepository.Casa:
     return CasaRepository.getCasaById(id)
 
-def getCasas() -> list[CasaRepository.Casa]:
-    return CasaRepository.getCasas()
+def getCasas(currentUser: str) -> list[CasaRepository.Casa]:
+    user = UserService.getUserByUsername(currentUser)
+    return CasaRepository.getCasasUsers(user.id)
 
 def createCasa(nome: str, descricao: str, currentUser: str) -> CasaRepository.Casa:
     user = UserService.getUserByUsername(currentUser)

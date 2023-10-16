@@ -11,8 +11,8 @@ class Casa(db.Model):
 def getCasaById(id) -> Casa:
     return Casa.query.filter_by(id=id).first()
 
-def getCasas() -> list:
-    return Casa.query.all()
+def getCasasUsers(userId: int) -> list[Casa]:
+    return Casa.query.filter_by(createdByUserId=userId).all()
 
 def createCasa(nome: str, descricao: str, id: int) -> Casa:
     casa = Casa(nome=nome, descricao=descricao, createdByUserId=id)

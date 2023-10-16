@@ -10,8 +10,8 @@ casa = Blueprint('casa', __name__, 'casa')
 def get_casas():
     currentUser = get_jwt_identity()
     
-    casas = CasaService.getCasas()
-    return jsonify([{"id": casa.id, "nome": casa.nome, "descricao": casa.descricao} for casa in casas], currentUser), 200
+    casas = CasaService.getCasas(currentUser)
+    return jsonify([{"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "criadoPor": casa.createdByUserId} for casa in casas]), 200
 
 # Endpoint para o metodo Post de casa
 @casa.route('/', methods=['POST'])
