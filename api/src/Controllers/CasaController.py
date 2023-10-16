@@ -25,3 +25,16 @@ def createCasa():
     
     casa = CasaService.createCasa(nome, descricao, currentUser)
     return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "currentUser": currentUser}), 201
+
+# Endpoint para o metodo PUT de casa
+@casa.route('/<int:id>', methods=['PUT'])
+@jwt_required()
+def updateCasa(id):
+    currentUser = get_jwt_identity()
+
+    data = request.get_json()
+    nome = data['nome']
+    descricao = data['descricao']
+    
+    casa = CasaService.updateCasa(id, nome, descricao, currentUser)
+    return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 200

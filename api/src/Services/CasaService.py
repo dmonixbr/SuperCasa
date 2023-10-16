@@ -15,14 +15,26 @@ def createCasa(nome: str, descricao: str, currentUser: str) -> CasaRepository.Ca
 
     return CasaRepository.createCasa(nome, descricao, user.id)
 
-def updateCasa(id: int, nome: str, descricao: str) -> CasaRepository.Casa:
-    if not nome or id:
-        raise ValueError('Nome ou id são obrigatórios')
-    
-    return CasaRepository.updateCasa(id, nome, descricao)
+def updateCasa(id: int, nome: str, descricao: str, currentUser: str) -> CasaRepository.Casa:
+    user = UserService.getUserByUsername(currentUser)
+    if _validaCasaUsuario(id, user.id) and nome:
+        return CasaRepository.updateCasa(id, nome, descricao)
+    elif not nome:
+        raise ValueError('Nome é obrigatório')
+
 
 def deleteCasa(id: int) -> CasaRepository.Casa:
     if not id:
         raise ValueError('Id é obrigatório')
     
     return CasaRepository.deleteCasa(id)
+
+def _validaCasaUsuario(casaId: int, userId: int) -> bool:
+    casa = getCasaById(casaId)
+    if not casa:
+        raise ValueError('Casa não encontrada')
+    
+    if casa.createdByUserId != userId:
+        raise ValueError('Casa não pertence ao usuário')
+    
+    return True
