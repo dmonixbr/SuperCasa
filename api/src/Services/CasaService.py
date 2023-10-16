@@ -1,8 +1,12 @@
 import src.Repositories.CasaRepository as CasaRepository
 import src.Services.UserService as UserService
 
-def getCasaById(id) -> CasaRepository.Casa:
-    return CasaRepository.getCasaById(id)
+def getCasaById(id: int, currentUser: str) -> CasaRepository.Casa:
+    user = UserService.getUserByUsername(currentUser)
+    if not user:
+        raise ValueError('Usuário não encontrado')
+    if _validaCasaUsuario(id, user.id):
+        return CasaRepository.getCasaById(id)
 
 def getCasas(currentUser: str) -> list[CasaRepository.Casa]:
     user = UserService.getUserByUsername(currentUser)

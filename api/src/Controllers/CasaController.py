@@ -13,6 +13,15 @@ def get_casas():
     casas = CasaService.getCasas(currentUser)
     return jsonify([{"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "criadoPor": casa.createdByUserId} for casa in casas]), 200
 
+# Endpoint para o metodo GET de casa especifica
+@casa.route('/<int:id>', methods=['GET'])
+@jwt_required()
+def get_casa(id):
+    currentUser = get_jwt_identity()
+
+    casa = CasaService.getCasaById(id, currentUser)
+    return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "criadoPor": casa.createdByUserId}), 200
+
 # Endpoint para o metodo Post de casa
 @casa.route('/', methods=['POST'])
 @jwt_required()
