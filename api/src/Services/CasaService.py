@@ -1,5 +1,6 @@
 import src.Repositories.CasaRepository as CasaRepository
 import src.Services.UserService as UserService
+import src.Repositories.ProdutoRepository as ProdutoRepository
 
 def _validaCasaUsuario(casa: CasaRepository.Casa, userId: int) -> bool:
     if not casa:
@@ -56,4 +57,58 @@ def deleteCasa(id: int, currentUser: str) -> CasaRepository.Casa:
     if _validaCasaUsuario(casa, user.id):
         return CasaRepository.deleteCasa(id)
 
+def adicionarProdutoCasa(idCasa: int, idProduto: int, quantidadeDesejada: int, quantidadeReal: int, currentUser: str) -> CasaRepository.Casa:
+    if not idCasa or not idProduto:
+        raise ValueError('Id da casa e do produto são obrigatórios')
     
+    if not quantidadeDesejada and not quantidadeReal:
+        raise ValueError('Quantidade desejada ou real são obrigatórias')
+    
+    if quantidadeDesejada < 1 or quantidadeReal < 0:
+        raise ValueError('Quantidade desejada não pode ser menor que 1 ou quantidade real não pode ser menor que 0')
+    
+    casa = CasaRepository.getCasaById(idCasa)
+    user = UserService.getUserByUsername(currentUser)
+    _validaCasaUsuario(casa, user)
+
+    return CasaRepository.adicionaProdutoCasa(idCasa, idProduto, quantidadeDesejada, quantidadeReal)
+
+def somaQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMais: int, currentUser: str) -> CasaRepository.Casa:
+    if not idCasa or not idProduto:
+        raise ValueError('Id da casa e do produto são obrigatórios')
+    
+    if not quantidadeAMais:
+        raise ValueError('Quantidade à mais é obrigatórias')
+    
+    if quantidadeAMais < 1:
+        raise ValueError('Quantidade à mais não pode ser menor que 0')
+    
+    casa = CasaRepository.getCasaById(idCasa)
+    user = UserService.getUserByUsername(currentUser)
+    _validaCasaUsuario(casa, user)
+
+    return CasaRepository.somaQuantidadeProduto(idCasa, idProduto, quantidadeAMais)
+
+def subtraiQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMenos: int, currentUser: str) -> CasaRepository.Casa:
+    if not idCasa or not idProduto:
+        raise ValueError('Id da casa e do produto são obrigatórios')
+    
+    if not quantidadeAMenos:
+        raise ValueError('Quantidade à menos é obrigatórias')
+    
+    if quantidadeAMenos < 1:
+        raise ValueError('Quantidade à menos não pode ser menor que 0')
+    
+    casa = CasaRepository.getCasaById(idCasa)
+    user = UserService.getUserByUsername(currentUser)
+    _validaCasaUsuario(casa, user)
+
+    produto = ProdutoRepository.getProdutoById(idProduto)
+    if produto not in casa.produtos:
+        raise ValueError('Produto não presente na lista da casa')
+    
+    indexProduto = casa.produtos.index(produto)
+    if casa.produtos[indexProduto].quantidade_real - quantidadeAMenos < 0:
+        return CasaRepository.somaQuantidadeProduto(idCasa, idProduto, 0)
+
+    return CasaRepository.somaQuantidadeProduto(idCasa, idProduto, quantidadeAMenos)
