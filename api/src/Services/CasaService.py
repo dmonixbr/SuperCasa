@@ -3,9 +3,11 @@ import src.Services.UserService as UserService
 
 def getCasaById(id: int, currentUser: str) -> CasaRepository.Casa:
     user = UserService.getUserByUsername(currentUser)
+    casa = CasaRepository.getCasaById(id)
+
     if not user:
         raise ValueError('Usuário não encontrado')
-    if _validaCasaUsuario(id, user.id):
+    if _validaCasaUsuario(casa, user.id):
         return CasaRepository.getCasaById(id)
 
 def getCasas(currentUser: str) -> list[CasaRepository.Casa]:
@@ -21,7 +23,12 @@ def createCasa(nome: str, descricao: str, currentUser: str) -> CasaRepository.Ca
 
 def updateCasa(id: int, nome: str, descricao: str, currentUser: str) -> CasaRepository.Casa:
     user = UserService.getUserByUsername(currentUser)
-    if _validaCasaUsuario(id, user.id) and nome:
+    casa = CasaRepository.getCasaById(id)
+
+    if _validaCasaUsuario(casa, user.id) and nome:
+        if not descricao:
+            return CasaRepository.updateCasa(id, nome, casa.descricao)
+        
         return CasaRepository.updateCasa(id, nome, descricao)
     elif not nome:
         raise ValueError('Nome é obrigatório')
@@ -32,16 +39,17 @@ def deleteCasa(id: int, currentUser: str) -> CasaRepository.Casa:
         raise ValueError('Id é obrigatório')
     
     user = UserService.getUserByUsername(currentUser)
+    casa = CasaRepository.getCasaById(id)
+
     if not user:
         raise ValueError('Usuário não encontrado')
 
-    if _validaCasaUsuario(id, user.id):
+    if _validaCasaUsuario(casa, user.id):
         return CasaRepository.deleteCasa(id)
 
     
 
-def _validaCasaUsuario(casaId: int, userId: int) -> bool:
-    casa = getCasaById(casaId)
+def _validaCasaUsuario(casa: CasaRepository.Casa, userId: int) -> bool:
     if not casa:
         raise ValueError('Casa não encontrada')
     

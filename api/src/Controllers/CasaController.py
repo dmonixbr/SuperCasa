@@ -41,9 +41,8 @@ def createCasa():
 def updateCasa(id):
     currentUser = get_jwt_identity()
 
-    data = request.get_json()
-    nome = data['nome']
-    descricao = data['descricao']
+    nome : str = request.json.get('nome')
+    descricao : str = request.json.get('descricao')
     
     casa = CasaService.updateCasa(id, nome, descricao, currentUser)
     return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 200
