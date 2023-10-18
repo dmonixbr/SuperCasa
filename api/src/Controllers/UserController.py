@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
 import src.Services.UserService as UserService
+from datetime import datetime, timedelta
 
 user = Blueprint('user', __name__, 'user')
 
@@ -13,7 +14,7 @@ def login():
     # Realize a validação do usuário e senha (geralmente contra um banco de dados)
     # Se as credenciais forem válidas, crie um token JWT
     if UserService.login(username, password):
-        access_token = create_access_token(identity=username)
+        access_token = create_access_token(identity=username, expires_delta=timedelta(minutes=60))
         return jsonify(access_token=access_token), 200
     else:
         return jsonify({"message": "Credenciais inválidas"}), 401
