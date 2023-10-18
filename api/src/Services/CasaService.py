@@ -1,6 +1,15 @@
 import src.Repositories.CasaRepository as CasaRepository
 import src.Services.UserService as UserService
 
+def _validaCasaUsuario(casa: CasaRepository.Casa, userId: int) -> bool:
+    if not casa:
+        raise ValueError('Casa não encontrada')
+    
+    if casa.createdByUserId != userId:
+        raise ValueError('Casa não pertence ao usuário')
+    
+    return True
+
 def getCasaById(id: int, currentUser: str) -> CasaRepository.Casa:
     user = UserService.getUserByUsername(currentUser)
     casa = CasaRepository.getCasaById(id)
@@ -48,12 +57,3 @@ def deleteCasa(id: int, currentUser: str) -> CasaRepository.Casa:
         return CasaRepository.deleteCasa(id)
 
     
-
-def _validaCasaUsuario(casa: CasaRepository.Casa, userId: int) -> bool:
-    if not casa:
-        raise ValueError('Casa não encontrada')
-    
-    if casa.createdByUserId != userId:
-        raise ValueError('Casa não pertence ao usuário')
-    
-    return True
