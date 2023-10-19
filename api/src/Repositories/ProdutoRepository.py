@@ -13,6 +13,14 @@ class Produto(db.Model):
         self.marca = marca
         self.createdByUserId = createdByUserId
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nome": self.nome,
+            "descricao": self.descricao,
+            "marca": self.marca,
+        }
+
 def getProdutoById(id: int) -> Produto:
     return Produto.query.filter_by(id=id).first()
 

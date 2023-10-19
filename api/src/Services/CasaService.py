@@ -69,9 +69,23 @@ def adicionarProdutoCasa(idCasa: int, idProduto: int, quantidadeDesejada: int, q
     
     casa = CasaRepository.getCasaById(idCasa)
     user = UserService.getUserByUsername(currentUser)
-    _validaCasaUsuario(casa, user)
+    _validaCasaUsuario(casa, user.id)
 
-    return CasaRepository.adicionaProdutoCasa(idCasa, idProduto, quantidadeDesejada, quantidadeReal)
+    return CasaRepository.adicionaProdutoCasa(casa, idProduto, quantidadeDesejada, quantidadeReal)
+
+def removeProdutoCasa(idCasa: int, idProduto: int, currentUser: str) -> CasaRepository.Casa:
+    if not idCasa or not idProduto:
+        raise ValueError('Id da casa e do produto são obrigatórios')
+    
+    casa = CasaRepository.getCasaById(idCasa)
+    user = UserService.getUserByUsername(currentUser)
+    _validaCasaUsuario(casa, user.id)
+
+    produto = ProdutoRepository.getProdutoById(idProduto)
+    if produto not in casa.produtos_associados:
+        raise ValueError('Produto não presente na lista da casa')
+
+    return CasaRepository.removeProdutoCasa(casa, produto)
 
 def somaQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMais: int, currentUser: str) -> CasaRepository.Casa:
     if not idCasa or not idProduto:
@@ -104,11 +118,11 @@ def subtraiQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMenos: int,
     _validaCasaUsuario(casa, user)
 
     produto = ProdutoRepository.getProdutoById(idProduto)
-    if produto not in casa.produtos:
+    if produto not in casa.produtos_associados:
         raise ValueError('Produto não presente na lista da casa')
     
-    indexProduto = casa.produtos.index(produto)
-    if casa.produtos[indexProduto].quantidade_real - quantidadeAMenos < 0:
+    indexProduto = casa.produtos_associados.index(produto)
+    if casa.produtos_associados[indexProduto].quantidade_real - quantidadeAMenos < 0:
         return CasaRepository.somaQuantidadeProduto(idCasa, idProduto, 0)
 
     return CasaRepository.somaQuantidadeProduto(idCasa, idProduto, quantidadeAMenos)

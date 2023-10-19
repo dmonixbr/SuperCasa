@@ -1,13 +1,16 @@
 from src import db
 import src.Repositories.ProdutoRepository as ProdutoRepository
 
-casa_produtos = db.Table(
-    'casa_produtos',
-    db.Column('produto_id', db.Integer, db.ForeignKey('produto.id')),
-    db.Column('casa_id', db.Integer, db.ForeignKey('casa.id')),
-    db.Column('quantidade_desejada', db.Integer),  # Adicione este campo
-    db.Column('quantidade_real', db.Integer)  # Adicione este campo
-)
+class CasaProduto(db.Model):
+    __tablename__ = 'casa_produtos'
+
+    produto_id = db.Column(db.Integer, db.ForeignKey('produto.id'), primary_key=True)
+    casa_id = db.Column(db.Integer, db.ForeignKey('casa.id'), primary_key=True)
+    quantidade_desejada = db.Column(db.Integer, nullable=False)
+    quantidade_real = db.Column(db.Integer, nullable=False)
+
+    casa = db.relationship("Casa", back_populates="produtos_associados")
+    produto = db.relationship("Produto", backref="casas_associadas")
 
 class Casa(db.Model):
     __tablename__ = 'casa'
@@ -16,7 +19,20 @@ class Casa(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     descricao = db.Column(db.String(255), nullable=True)
     createdByUserId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    produtos = db.relationship('Produto', secondary=casa_produtos, backref=db.backref('casas', lazy='dynamic'))
+    produtos_associados = db.relationship('CasaProduto', back_populates='casa')
+
+    def getProdutos(self):
+        return [
+            {
+                "id": produtoCasa.produto.id,
+                "nome": produtoCasa.produto.nome,
+                "marca": produtoCasa.produto.marca,
+                "descricao": produtoCasa.produto.descricao,
+                "quantidade_desejada": produtoCasa.quantidade_desejada,
+                "quantidade_real": produtoCasa.quantidade_real
+            }
+            for produtoCasa in self.produtos_associados
+        ]
 
 
 def getCasaById(id) -> Casa:
@@ -44,15 +60,12 @@ def deleteCasa(id: int) -> Casa:
     db.session.commit()
     return casa
 
-def adicionaProdutoCasa(idCasa: int, idProduto: int, quantidadeDesejada: int, quantidadeReal: int) -> Casa:
-    casa = getCasaById(idCasa)
+def adicionaProdutoCasa(casa: Casa, idProduto: int, quantidadeDesejada: int, quantidadeReal: int) -> Casa:
     produto = ProdutoRepository.getProdutoById(idProduto)
-    if produto in casa.produtos:
+    if produto in casa.produtos_associados:
         raise ValueError('Produto já adicionado na casa')
     
-    casa.produtos.append(produto)
-    casa.produtos[-1].quantidade_desejada = quantidadeDesejada
-    casa.produtos[-1].quantidade_real = quantidadeReal
+    casa.produtos_associados.append(CasaProduto(produto_id=idProduto, casa_id=casa.id, quantidade_desejada=quantidadeDesejada, quantidade_real=quantidadeReal))
     db.session.commit()
 
     return casa
@@ -61,11 +74,8 @@ def somaQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMais: int) -> 
     casa = getCasaById(idCasa)
     produto = ProdutoRepository.getProdutoById(idProduto)
     
-    if produto not in casa.produtos:
-        raise ValueError('Produto não adicionado na casa')
-    
-    indexProduto = casa.produtos.index(produto)
-    casa.produtos[indexProduto].quantidade_real += quantidadeAMais
+    indexProduto = casa.produtos_associados.index(produto)
+    casa.produtos_associados[indexProduto].quantidade_real += quantidadeAMais
 
     db.session.commit()
 
@@ -75,24 +85,18 @@ def subtraiQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMenos: int)
     casa = getCasaById(idCasa)
     produto = ProdutoRepository.getProdutoById(idProduto)
     
-    if produto not in casa.produtos:
+    if produto not in casa.produtos_associados:
         raise ValueError('Produto não adicionado na casa')
     
-    indexProduto = casa.produtos.index(produto)
-    casa.produtos[indexProduto].quantidade_real -= quantidadeAMenos
+    indexProduto = casa.produtos_associados.index(produto)
+    casa.produtos_associados[indexProduto].quantidade_real -= quantidadeAMenos
 
     db.session.commit()
 
     return casa
 
-def removeProdutoCasa(idCasa: int, idProduto: int) -> Casa:
-    casa = getCasaById(idCasa)
-    produto = ProdutoRepository.getProdutoById(idProduto)
-    
-    if produto not in casa.produtos:
-        raise ValueError('Produto não adicionado na casa')
-    
-    casa.produtos.remove(produto)
+def removeProdutoCasa(casa: Casa, produto: ProdutoRepository.Produto) -> Casa:
+    casa.produtos_associados.remove(produto)
     db.session.commit()
 
     return casa

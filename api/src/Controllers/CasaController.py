@@ -11,7 +11,7 @@ def get_casas():
     currentUser = get_jwt_identity()
     
     casas = CasaService.getCasas(currentUser)
-    return jsonify([{"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "criadoPor": casa.createdByUserId} for casa in casas]), 200
+    return jsonify([{"id": casa.id, "nome": casa.nome, "descricao": casa.descricao} for casa in casas]), 200
 
 # Endpoint para o metodo GET de casa especifica
 @casa.route('/<int:id>', methods=['GET'])
@@ -20,7 +20,12 @@ def get_casa(id):
     currentUser = get_jwt_identity()
 
     casa = CasaService.getCasaById(id, currentUser)
-    return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "criadoPor": casa.createdByUserId}), 200
+    return jsonify({
+        "id": casa.id, 
+        "nome": casa.nome, 
+        "descricao": casa.descricao,
+        "produtos": casa.getProdutos()
+        }), 200
 
 # Endpoint para o metodo Post de casa
 @casa.route('/', methods=['POST'])
@@ -41,8 +46,8 @@ def createCasa():
 def updateCasa(id):
     currentUser = get_jwt_identity()
 
-    nome : str = request.json.get('nome')
-    descricao : str = request.json.get('descricao')
+    nome: str = request.json.get('nome')
+    descricao: str = request.json.get('descricao')
     
     casa = CasaService.updateCasa(id, nome, descricao, currentUser)
     return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 200
@@ -55,3 +60,16 @@ def deleteCasa(id):
 
     casa = CasaService.deleteCasa(id, currentUser)
     return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 200
+
+# Endpoint para o metodo adicionarProduto a casa
+@casa.route('/<int:id>/adicionarProduto', methods=['PUT'])
+@jwt_required()
+def adcionarProdutoCasa(id):
+    currentUser = get_jwt_identity()
+
+    produtoId: int = request.json.get('produtoId')
+    quantidadeDesejada = int(request.json.get('quantidadeDesejada'))
+    quantidadeReal = int(request.json.get('quantidadeReal'))
+    
+    casa = CasaService.adicionarProdutoCasa(id, produtoId, quantidadeDesejada, quantidadeReal, currentUser)
+    return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
