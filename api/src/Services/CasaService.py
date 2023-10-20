@@ -105,7 +105,7 @@ def somaQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMais: int, cur
     
     casa = CasaRepository.getCasaById(idCasa)
     user = UserService.getUserByUsername(currentUser)
-    _validaCasaUsuario(casa, user)
+    _validaCasaUsuario(casa, user.id)
 
     return CasaRepository.somaQuantidadeProduto(idCasa, idProduto, quantidadeAMais)
 

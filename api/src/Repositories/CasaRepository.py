@@ -76,9 +76,9 @@ def adicionaProdutoCasa(casa: Casa, idProduto: int, quantidadeDesejada: int, qua
 
 def somaQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMais: int) -> Casa:
     casa = getCasaById(idCasa)
-    produto = ProdutoRepository.getProdutoById(idProduto)
+    relacao = getRelacaoProdutoCasa(idCasa, idProduto)
     
-    indexProduto = casa.produtos_associados.index(produto)
+    indexProduto = casa.produtos_associados.index(relacao)
     casa.produtos_associados[indexProduto].quantidade_real += quantidadeAMais
 
     db.session.commit()
