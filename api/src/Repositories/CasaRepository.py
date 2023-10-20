@@ -8,6 +8,7 @@ class CasaProduto(db.Model):
     casa_id = db.Column(db.Integer, db.ForeignKey('casa.id'), primary_key=True)
     quantidade_desejada = db.Column(db.Integer, nullable=False)
     quantidade_real = db.Column(db.Integer, nullable=False)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     casa = db.relationship("Casa", back_populates="produtos_associados")
     produto = db.relationship("Produto", backref="casas_associadas")
@@ -31,7 +32,7 @@ class Casa(db.Model):
                 "quantidade_desejada": produtoCasa.quantidade_desejada,
                 "quantidade_real": produtoCasa.quantidade_real
             }
-            for produtoCasa in self.produtos_associados
+            for produtoCasa in self.produtos_associados if produtoCasa.ativo
         ]
 
 
@@ -60,10 +61,13 @@ def deleteCasa(id: int) -> Casa:
     db.session.commit()
     return casa
 
-def adicionaProdutoCasa(casa: Casa, idProduto: int, quantidadeDesejada: int, quantidadeReal: int) -> Casa:
-    produto = ProdutoRepository.getProdutoById(idProduto)
-    if produto in casa.produtos_associados:
-        raise ValueError('Produto já adicionado na casa')
+def adicionaProdutoCasa(casa: Casa, idProduto: int, quantidadeDesejada: int, quantidadeReal: int, relacao: CasaProduto) -> Casa:
+    if relacao and relacao in casa.produtos_associados and not relacao.ativo:
+        relacao.ativo = True
+        relacao.quantidade_desejada = quantidadeDesejada
+        relacao.quantidade_real = quantidadeReal
+        db.session.commit()
+        return casa
     
     casa.produtos_associados.append(CasaProduto(produto_id=idProduto, casa_id=casa.id, quantidade_desejada=quantidadeDesejada, quantidade_real=quantidadeReal))
     db.session.commit()
@@ -96,7 +100,11 @@ def subtraiQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMenos: int)
     return casa
 
 def removeProdutoCasa(casa: Casa, produto: ProdutoRepository.Produto) -> Casa:
-    casa.produtos_associados.remove(produto)
+    relacao = CasaProduto.query.filter_by(casa_id=casa.id, produto_id=produto.id).first()
+    relacao.ativo = False
     db.session.commit()
 
     return casa
+
+def getRelacaoProdutoCasa(idCasa: int, idProduto: int) -> CasaProduto:
+    return CasaProduto.query.filter_by(casa_id=idCasa, produto_id=idProduto).first()

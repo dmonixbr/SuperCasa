@@ -71,7 +71,12 @@ def adicionarProdutoCasa(idCasa: int, idProduto: int, quantidadeDesejada: int, q
     user = UserService.getUserByUsername(currentUser)
     _validaCasaUsuario(casa, user.id)
 
-    return CasaRepository.adicionaProdutoCasa(casa, idProduto, quantidadeDesejada, quantidadeReal)
+    relacao = CasaRepository.getRelacaoProdutoCasa(casa.id, idProduto)
+    if relacao and relacao in casa.produtos_associados and relacao.ativo:
+        raise ValueError('Produto já adicionado na casa')
+
+
+    return CasaRepository.adicionaProdutoCasa(casa, idProduto, quantidadeDesejada, quantidadeReal, relacao)
 
 def removeProdutoCasa(idCasa: int, idProduto: int, currentUser: str) -> CasaRepository.Casa:
     if not idCasa or not idProduto:
@@ -82,8 +87,9 @@ def removeProdutoCasa(idCasa: int, idProduto: int, currentUser: str) -> CasaRepo
     _validaCasaUsuario(casa, user.id)
 
     produto = ProdutoRepository.getProdutoById(idProduto)
-    if produto not in casa.produtos_associados:
-        raise ValueError('Produto não presente na lista da casa')
+    for produto_as in casa.produtos_associados:
+        if produto_as.produto_id == idProduto:
+            return CasaRepository.removeProdutoCasa(casa, produto)
 
     return CasaRepository.removeProdutoCasa(casa, produto)
 

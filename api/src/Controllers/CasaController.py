@@ -73,3 +73,14 @@ def adcionarProdutoCasa(id):
     
     casa = CasaService.adicionarProdutoCasa(id, produtoId, quantidadeDesejada, quantidadeReal, currentUser)
     return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
+
+# Endpoint para o metodo removeProduto a casa
+@casa.route('/<int:id>/removeProduto', methods=['PUT'])
+@jwt_required()
+def removeProdutoCasa(id):
+    currentUser = get_jwt_identity()
+
+    produtoId = request.json.get('produtoId')
+
+    aux = CasaService.removeProdutoCasa(id, produtoId, currentUser)
+    return jsonify({"id": aux.id, "nome": aux.nome, "descricao": aux.descricao, "produtos": aux.getProdutos()}), 200
