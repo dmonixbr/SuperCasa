@@ -121,14 +121,14 @@ def subtraiQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMenos: int,
     
     casa = CasaRepository.getCasaById(idCasa)
     user = UserService.getUserByUsername(currentUser)
-    _validaCasaUsuario(casa, user)
+    _validaCasaUsuario(casa, user.id)
 
-    produto = ProdutoRepository.getProdutoById(idProduto)
-    if produto not in casa.produtos_associados:
+    relacao = CasaRepository.getRelacaoProdutoCasa(idCasa, idProduto)
+    if not relacao or not relacao.ativo:
         raise ValueError('Produto não presente na lista da casa')
     
-    indexProduto = casa.produtos_associados.index(produto)
+    indexProduto = casa.produtos_associados.index(relacao)
     if casa.produtos_associados[indexProduto].quantidade_real - quantidadeAMenos < 0:
-        return CasaRepository.somaQuantidadeProduto(idCasa, idProduto, 0)
+        return CasaRepository.subtraiQuantidadeProduto(relacao, casa, 0)
 
-    return CasaRepository.somaQuantidadeProduto(idCasa, idProduto, quantidadeAMenos)
+    return CasaRepository.subtraiQuantidadeProduto(relacao, casa, quantidadeAMenos)

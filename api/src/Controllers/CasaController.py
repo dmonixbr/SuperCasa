@@ -96,3 +96,15 @@ def somaQuantidadeProduto(id):
 
     casa = CasaService.somaQuantidadeProduto(id, produtoId, quantidadeAMais, currentUser)
     return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
+
+# Endpoint para o metodo subtraiQuantidadeProduto a casa
+@casa.route('/<int:id>/subtraiQuantidadeProduto', methods=['PUT'])
+@jwt_required()
+def subtraiQuantidadeProduto(id):
+    currentUser = get_jwt_identity()
+
+    produtoId = request.json.get('produtoId')
+    quantidadeAMenos = request.json.get('quantidadeAMenos')
+
+    casa = CasaService.subtraiQuantidadeProduto(id, produtoId, quantidadeAMenos, currentUser)
+    return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200

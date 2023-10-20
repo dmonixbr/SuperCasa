@@ -85,14 +85,8 @@ def somaQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMais: int) -> 
 
     return casa
 
-def subtraiQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMenos: int) -> Casa:
-    casa = getCasaById(idCasa)
-    produto = ProdutoRepository.getProdutoById(idProduto)
-    
-    if produto not in casa.produtos_associados:
-        raise ValueError('Produto não adicionado na casa')
-    
-    indexProduto = casa.produtos_associados.index(produto)
+def subtraiQuantidadeProduto(relacao: CasaProduto, casa: Casa, quantidadeAMenos: int) -> Casa:
+    indexProduto = casa.produtos_associados.index(relacao)
     casa.produtos_associados[indexProduto].quantidade_real -= quantidadeAMenos
 
     db.session.commit()
