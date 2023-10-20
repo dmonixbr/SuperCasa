@@ -108,3 +108,18 @@ def subtraiQuantidadeProduto(id):
 
     casa = CasaService.subtraiQuantidadeProduto(id, produtoId, quantidadeAMenos, currentUser)
     return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
+
+# Endpoint para o metodo updateProdutoCasa a casa
+@casa.route('/<int:id>/updateProdutoCasa', methods=['PUT'])
+@jwt_required()
+def updateProdutoCasa(id):
+    currentUser = get_jwt_identity()
+
+    produtoId = request.json.get('produtoId')
+    relacao = CasaService.getRelacaoProdutoCasa(id, produtoId, currentUser)
+    quantidadeDesejada = request.json.get('quantidadeDesejada', relacao.quantidade_desejada)
+    quantidadeReal = request.json.get('quantidadeReal', relacao.quantidade_real)
+
+    casa = CasaService.updateProdutoCasa(relacao, quantidadeDesejada, quantidadeReal, currentUser)
+
+    return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200

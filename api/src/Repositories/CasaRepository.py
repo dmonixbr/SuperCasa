@@ -100,5 +100,14 @@ def removeProdutoCasa(casa: Casa, produto: ProdutoRepository.Produto) -> Casa:
 
     return casa
 
+def updateProdutoCasa(casa: Casa, relacao: CasaProduto, quantidadeDesejada: int, quantidadeReal: int) -> Casa:
+    indexProduto = casa.produtos_associados.index(relacao)
+    casa.produtos_associados[indexProduto].quantidade_desejada = quantidadeDesejada
+    casa.produtos_associados[indexProduto].quantidade_real = quantidadeReal
+
+    db.session.commit()
+
+    return casa
+
 def getRelacaoProdutoCasa(idCasa: int, idProduto: int) -> CasaProduto:
     return CasaProduto.query.filter_by(casa_id=idCasa, produto_id=idProduto).first()

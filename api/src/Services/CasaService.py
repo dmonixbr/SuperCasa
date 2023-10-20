@@ -132,3 +132,26 @@ def subtraiQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMenos: int,
         return CasaRepository.subtraiQuantidadeProduto(relacao, casa, 0)
 
     return CasaRepository.subtraiQuantidadeProduto(relacao, casa, quantidadeAMenos)
+
+def getRelacaoProdutoCasa(idCasa: int, idProduto: int, currentUser: str) -> CasaRepository.CasaProduto:
+    if not idCasa or not idProduto:
+        raise ValueError('Id da casa e do produto são obrigatórios')
+    
+    casa = CasaRepository.getCasaById(idCasa)
+    user = UserService.getUserByUsername(currentUser)
+    _validaCasaUsuario(casa, user.id)
+
+    return CasaRepository.getRelacaoProdutoCasa(idCasa, idProduto)
+
+def updateProdutoCasa(relacao: CasaRepository.CasaProduto, quantidadeDesejada: int, quantidadeReal: int, currentUser: str) -> CasaRepository.Casa:
+    if not relacao:
+        raise ValueError('Produto não presente na lista da casa')
+    
+    if quantidadeDesejada < 1 or quantidadeReal < 0:
+        raise ValueError('Quantidade desejada não pode ser menor que 1 ou quantidade real não pode ser menor que 0')
+    
+    casa = CasaRepository.getCasaById(relacao.casa_id)
+    user = UserService.getUserByUsername(currentUser)
+    _validaCasaUsuario(casa, user.id)
+    
+    return CasaRepository.updateProdutoCasa(casa, relacao, quantidadeDesejada, quantidadeReal)
