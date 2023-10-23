@@ -6,10 +6,10 @@ import src.libs.HttpResponse as HttpResponse
 
 def _validaCasaUsuario(casa: CasaRepository.Casa, userId: int) -> bool:
     if not casa:
-        raise ValueError('Casa não encontrada')
+        raise ResponseException('Casa não encontrada', HttpResponse.NOT_FOUND, 'Service', 'Casa._validaCasaUsuario')
     
     if casa.createdByUserId != userId:
-        raise ValueError('Casa não pertence ao usuário')
+        raise ResponseException('Casa não pertence ao usuário', HttpResponse.UNAUTHORIZED, 'Service', 'Casa._validaCasaUsuario')
     
     return True
 
