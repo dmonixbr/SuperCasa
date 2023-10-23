@@ -1,3 +1,4 @@
+from flask import jsonify
 class ResponseException(Exception):
     def __init__(self, mensagem: str, tipo: int, area: str, modulo: str):
         super().__init__(mensagem)
@@ -7,8 +8,8 @@ class ResponseException(Exception):
         self.modulo = modulo
 
     def Response(self):
-        return {
+        return jsonify({
             "error": self.mensagem,
             "modulo": self.modulo,
             "area": self.area
-        }, self.tipo
+        }), self.tipo
