@@ -17,28 +17,37 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(metadata=metadata)
+db_test = SQLAlchemy(metadata=metadata)
 jwt = JWTManager()
 bcrypt = Bcrypt()
 
-def create_app():
-    app = Flask(_name_)
+def create_app(database_type='production'):
+    app = Flask(__name__)
     app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Substitua isso por uma chave secreta segura
 
     ############################################################
     ################## BANCO DE DADOS ##########################
     ############################################################
 
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    
+    if database_type == 'test':
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tests.sqlite')
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 
-    basedir = os.path.abspath(os.path.dirname(_file_))
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    db.init_app(app)
-    Migrate(app,db, render_as_batch=True)
+    if database_type == 'test':
+        db.init_app(app)
+    else:
+        db_test.init_app(app)
+    
+    Migrate(app, db, render_as_batch=True)
+    Migrate(app, db_test, render_as_batch=True)
 
     jwt.init_app(app)
     bcrypt.init_app(app)
-
 
     #############################################################
     ####################### BLUEPRINTS ##########################
