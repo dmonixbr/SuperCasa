@@ -50,7 +50,7 @@ def updateCasa(id: int, nome: str, descricao: str, currentUser: str) -> CasaRepo
 
 def deleteCasa(id: int, currentUser: str) -> CasaRepository.Casa:
     if not id:
-        raise ResponseException('Nome é obrigatórios', HttpResponse.BAD_REQUEST, 'Service', 'Casa.deleteCasa')
+        raise ResponseException('Id é obrigatórios', HttpResponse.BAD_REQUEST, 'Service', 'Casa.deleteCasa')
     
     user = UserService.getUserByUsername(currentUser)
     casa = CasaRepository.getCasaById(id)

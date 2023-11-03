@@ -106,3 +106,11 @@ def test_get_relacao_produto_casa(client):
     assert relacao.casa_id == casa.id
     assert relacao.quantidade_desejada == 1
     assert relacao.quantidade_real == 1
+
+def test_get_casas(client):
+    casa = CasaRepository.createCasa("Casa 1", "Casa 1", 1)
+    casas = CasaRepository.getCasasUsers(1)
+    assert len(casas) == 1
+
+
+
