@@ -14,6 +14,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router';
 
+import userApi from '../libs/api/features/user';
+
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -34,15 +36,20 @@ export default function SignIn() {
 
   const navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      email: data.get('email'),
+      email: data.get('username'),
       password: data.get('password'),
     });
 
-    navigate('/home');
+    const resposta = await userApi.loginUser({
+      username: data.get('username') as string,
+      password: data.get('password') as string,
+    });
+    console.log(resposta);
+    // navigate('/home');
   };
 
   return (

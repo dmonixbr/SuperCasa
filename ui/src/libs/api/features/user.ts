@@ -10,4 +10,6 @@ const createUser = async (request: CreateUserRequest) => axiosInstance.post<Crea
 
 const loginUser = async (request: LoginUserRequest) => axiosInstance.post<LoginUserResponse>(`${USER_BASE_URL}/login`, request);
 
-export default {createUser, loginUser}
+const userApi = {createUser, loginUser};
+
+export default userApi;
