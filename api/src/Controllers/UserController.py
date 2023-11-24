@@ -16,9 +16,10 @@ def login():
 
         # Realize a validação do usuário e senha (geralmente contra um banco de dados)
         # Se as credenciais forem válidas, crie um token JWT
-        if UserService.login(username, password):
+        user = UserService.login(username, password)
+        if user:
             access_token = create_access_token(identity=username, expires_delta=timedelta(minutes=60))
-            resposta = createResponse({"access_token": access_token}, HttpResponse.SUCCESS)
+            resposta = createResponse({"id":user.id, "username": user.username, "JWT": access_token}, HttpResponse.SUCCESS)
             return resposta
         else:
             return jsonify({"message": "Credenciais inválidas"}), HttpResponse.UNAUTHORIZED

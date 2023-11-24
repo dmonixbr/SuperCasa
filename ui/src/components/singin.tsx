@@ -13,8 +13,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router';
-
+import { UserContext } from '../libs/context/user-context';
 import userApi from '../libs/api/features/user';
+import { IUser } from '../typings/user';
 
 function Copyright(props: any) {
   return (
@@ -32,24 +33,28 @@ function Copyright(props: any) {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function SignIn() {
+const SignIn = (props: any) => {
+
+  const [userComponent, setUserComponent] = React.useState<IUser | null>(null);
+
+  const { handleLogin } = React.useContext(UserContext);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('username'),
-      password: data.get('password'),
-    });
 
     const resposta = await userApi.loginUser({
       username: data.get('username') as string,
       password: data.get('password') as string,
     });
-    console.log(resposta);
-    // navigate('/home');
+    
+    if (resposta.status === 200) {
+      const user = resposta.data as IUser;
+      handleLogin(user);
+      navigate('/home');
+    }
   };
 
   return (
@@ -117,3 +122,5 @@ export default function SignIn() {
     </ThemeProvider>
   );
 }
+
+export default SignIn;
