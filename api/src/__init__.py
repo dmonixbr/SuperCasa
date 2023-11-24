@@ -26,11 +26,11 @@ migrate = Migrate()
 
 def create_app(database_type='production'):
     app = Flask(__name__)
+    cors.init_app(app, origins="*", allow_headers="*", allow_methods="*")
     app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Substitua isso por uma chave secreta segura
 
     jwt.init_app(app)
     bcrypt.init_app(app)
-    cors.init_app(app)
 
     ############################################################
     ################## BANCO DE DADOS ##########################

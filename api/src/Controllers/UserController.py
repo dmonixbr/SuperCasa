@@ -3,6 +3,7 @@ from flask_jwt_extended import create_access_token
 import src.Services.UserService as UserService
 import src.libs.HttpResponse as HttpResponse
 from datetime import timedelta
+from src.libs.RespostaHTTP import createResponse
 
 user = Blueprint('user', __name__, 'user')
 
@@ -17,7 +18,8 @@ def login():
         # Se as credenciais forem válidas, crie um token JWT
         if UserService.login(username, password):
             access_token = create_access_token(identity=username, expires_delta=timedelta(minutes=60))
-            return jsonify(access_token=access_token), HttpResponse.SUCCESS
+            resposta = createResponse({"access_token": access_token}, HttpResponse.SUCCESS)
+            return resposta
         else:
             return jsonify({"message": "Credenciais inválidas"}), HttpResponse.UNAUTHORIZED
     except ValueError as e:
@@ -35,7 +37,8 @@ def createUser():
             return jsonify({"message": "Dados insuficientes"}), HttpResponse
         
         user = UserService.createUser(username, password)
-        return jsonify({"username":user.username}), 201
+        resposta = createResponse({"username": user.username}, HttpResponse.CREATED)
+        return resposta
     except ValueError as e:
         return jsonify({"error": str(e)}), HttpResponse
     except Exception as e:
@@ -54,7 +57,8 @@ def updateUser():
         
         user = UserService.updateUser(id, username, password, oldPassword)
         if user:
-            return jsonify({"username":user.username}), HttpResponse.SUCCESS
+            resposta = createResponse({"username": user.username}, HttpResponse.SUCCESS)
+            return resposta
         else:
             return jsonify({"message": "Usuário não encontrado ou senha inválida!"}), HttpResponse.NOT_FOUND
     except ValueError as e:
