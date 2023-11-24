@@ -52,7 +52,7 @@ def createCasa():
         descricao = data['descricao']
         
         casa = CasaService.createCasa(nome, descricao, currentUser)
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "currentUser": currentUser}), 201
+        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 201
     except ResponseException as e:
         return e.Response()
     except Exception as e:
@@ -108,7 +108,7 @@ def adcionarProdutoCasa(id):
         return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
 
 # Endpoint para o metodo removeProduto a casa
-@casa.route('/<int:id>/removeProduto', methods=['PUT'])
+@casa.route('/<int:id>/removerProduto', methods=['PUT'])
 @jwt_required()
 def removeProdutoCasa(id):
     try:

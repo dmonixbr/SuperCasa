@@ -5,6 +5,7 @@ from sqlalchemy import MetaData
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 
 convention = {
         "ix": 'ix_%(column_0_label)s',
@@ -20,10 +21,16 @@ db = SQLAlchemy(metadata=metadata)
 db_test = SQLAlchemy(metadata=metadata)
 jwt = JWTManager()
 bcrypt = Bcrypt()
+cors = CORS()
+migrate = Migrate()
 
 def create_app(database_type='production'):
     app = Flask(__name__)
     app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Substitua isso por uma chave secreta segura
+
+    jwt.init_app(app)
+    bcrypt.init_app(app)
+    cors.init_app(app)
 
     ############################################################
     ################## BANCO DE DADOS ##########################
@@ -33,21 +40,15 @@ def create_app(database_type='production'):
     
     if database_type == 'test':
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tests.sqlite')
+        db_test.init_app(app)
+        migrate.init_app(app, db_test, render_as_batch=True)
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+        db.init_app(app)
+        migrate.init_app(app, db, render_as_batch=True)
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    if database_type == 'test':
-        db.init_app(app)
-    else:
-        db_test.init_app(app)
     
-    Migrate(app, db, render_as_batch=True)
-    Migrate(app, db_test, render_as_batch=True)
-
-    jwt.init_app(app)
-    bcrypt.init_app(app)
 
     #############################################################
     ####################### BLUEPRINTS ##########################

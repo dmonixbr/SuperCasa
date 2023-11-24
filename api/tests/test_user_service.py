@@ -1,6 +1,6 @@
 import src.Services.UserService as UserService
 import pytest
-from src import create_app, db
+from src import create_app, db_test as db
 
 @pytest.fixture
 def app():
