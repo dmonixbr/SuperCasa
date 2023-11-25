@@ -3,4 +3,5 @@ export interface IUser{
     username: string;
     password?: string;
     JWT?: string;
+    oldPassword?: string;
 }

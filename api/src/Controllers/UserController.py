@@ -4,6 +4,7 @@ import src.Services.UserService as UserService
 import src.libs.HttpResponse as HttpResponse
 from datetime import timedelta
 from src.libs.RespostaHTTP import createResponse
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 user = Blueprint('user', __name__, 'user')
 
@@ -51,8 +52,14 @@ def createUser():
         return resposta
 
 @user.route('/', methods=['PUT'])
+@jwt_required()
 def updateUser():
     try:
+        currentUser = get_jwt_identity()
+        if not currentUser:
+            resposta = createResponse({"message": "Sem altorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
+            return resposta
+
         id: int = int(request.json.get('id'))
         username:str = request.json.get('username')
         password:str = request.json.get('password')

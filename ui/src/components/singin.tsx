@@ -14,7 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router';
 import { UserContext } from '../libs/context/user-context';
-import userApi from '../libs/api/features/user';
+import userService from '../services/user-service';
 import { IUser } from '../typings/user';
 import { toast } from 'react-toastify';
 
@@ -44,25 +44,27 @@ const SignIn = (props: any) => {
     }
   }, [])
 
-  const [userComponent, setUserComponent] = React.useState<IUser | null>(null);
-
   const { handleLogin } = React.useContext(UserContext);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    const resposta = await userApi.loginUser({
-      username: data.get('username') as string,
-      password: data.get('password') as string,
-    });
-    
-    if (resposta.status === 200) {
-      const user = resposta.data as IUser;
-      handleLogin(user);
-      navigate('/produtos');
+    try{
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+  
+      const resposta = await userService.loginUser({
+        username: data.get('username') as string,
+        password: data.get('password') as string,
+      });
+      
+      if (!!resposta) {
+        const user = resposta as IUser;
+        handleLogin(user);
+        navigate('/produtos');
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 

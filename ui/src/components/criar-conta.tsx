@@ -14,7 +14,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import { UserContext } from "../libs/context/user-context";
-import userApi from "../libs/api/features/user";
+import userService from "../services/user-service";
 import { IUser } from "../typings/user";
 
 // TODO remove, this demo shouldn't need to reset the theme.
@@ -38,24 +38,28 @@ const CriarConta = (props: any) => {
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    try {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
 
-    const respostaCriarUsuario = await userApi.createUser({
-      username: data.get("username") as string,
-      password: data.get("password") as string,
-    });
-
-    if (respostaCriarUsuario.status === 201) {
-      const resposta = await userApi.loginUser({
+      const respostaCriarUsuario = await userService.createUser({
         username: data.get("username") as string,
         password: data.get("password") as string,
       });
-      if (resposta.status === 200) {
-        const user = resposta.data as IUser;
-        handleLogin(user);
-        navigate("/produtos");
+
+      if (!!respostaCriarUsuario) {
+        const resposta = await userService.loginUser({
+          username: data.get("username") as string,
+          password: data.get("password") as string,
+        });
+        if (!!resposta) {
+          const user = resposta as IUser;
+          handleLogin(user);
+          navigate("/produtos");
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
