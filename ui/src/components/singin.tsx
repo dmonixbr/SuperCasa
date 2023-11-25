@@ -35,6 +35,14 @@ const defaultTheme = createTheme();
 
 const SignIn = (props: any) => {
 
+  const { isSignedIn } = React.useContext(UserContext);
+
+  React.useEffect(() => {
+    if (isSignedIn) {
+      navigate('/produtos');
+    }
+  }, [])
+
   const [userComponent, setUserComponent] = React.useState<IUser | null>(null);
 
   const { handleLogin } = React.useContext(UserContext);
@@ -53,7 +61,7 @@ const SignIn = (props: any) => {
     if (resposta.status === 200) {
       const user = resposta.data as IUser;
       handleLogin(user);
-      navigate('/home');
+      navigate('/produtos');
     }
   };
 

@@ -13,11 +13,15 @@ function App() {
   const handleLogin = (user: IUser) => {
     setUser(user);
     setIsSignedIn(true);
-    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  const handleLogout = () => {
+    setUser(null);
+    setIsSignedIn(false);
   }
 
   return (
-    <UserContext.Provider value={{ user, handleLogin, isSignedIn }}>
+    <UserContext.Provider value={{ user, handleLogin, isSignedIn, handleLogout }}>
       <RouterProvider router={router} fallbackElement={<p>Initial Load...</p>} />
     </UserContext.Provider>
   );

@@ -19,12 +19,12 @@ export const router = createBrowserRouter([
   },
   {
     id: "casas",
-    path: "casas",
+    path: "/casas",
     Component: Casas,
   },
   {
     id: "produtos",
-    path: "produtos",
+    path: "/produtos",
     Component: Produtos,
   }
 ]);

@@ -11,10 +11,13 @@ import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { MainListItems, secondaryListItems } from './list-items';
 import AppBar from '../shared/app-bar';
 import Drawer from '../shared/drawer';
+import { UserContext } from '../libs/context/user-context';
+import { useNavigate } from 'react-router';
+import UserMenu from './user-menu';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
@@ -25,9 +28,29 @@ interface IPageLayoutProps{
 
 const PageLayout = (props: IPageLayoutProps) => {
   const {children} = props;
+  const { isSignedIn, handleLogout, user }= React.useContext(UserContext);
+  const navigate = useNavigate();
+
   const [open, setOpen] = React.useState(true);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+
+
+  React.useEffect(() => {
+    if (!isSignedIn) {
+      navigate('/');
+    }
+  }, [isSignedIn]);
+
   const toggleDrawer = () => {
     setOpen(!open);
+  };
+
+  
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+    
   };
 
   return (
@@ -61,9 +84,9 @@ const PageLayout = (props: IPageLayoutProps) => {
             >
               Dashboard
             </Typography>
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={handleClick}>
               <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
+                <AccountCircleIcon />
               </Badge>
             </IconButton>
           </Toolbar>
@@ -106,6 +129,12 @@ const PageLayout = (props: IPageLayoutProps) => {
           </Container>
         </Box>
       </Box>
+      <UserMenu
+        open={openMenu}
+        anchorEl={anchorEl}
+        handleClose={() => setAnchorEl(null)}
+        handleLogout={handleLogout}
+        user={user} />
     </ThemeProvider>
   );
 }
