@@ -6,6 +6,7 @@ import Dashboard from '../../components/dashboard';
 import Casas from '../../components/casas';
 import Produtos from '../../components/produtos';
 import CriarConta from '../../components/criar-conta';
+import TrocarSenha from '../../components/trocar-senha';
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,11 @@ export const router = createBrowserRouter([
     id: "criar-conta",
     path: "/criar-conta",
     Component: CriarConta,
+  },
+  {
+    id: 'trocar-senha',
+    path: '/trocar-senha',
+    Component: TrocarSenha,
   },
   {
     id: "dashboard",

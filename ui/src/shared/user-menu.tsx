@@ -3,12 +3,20 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { IUserMenu } from "../typings/user-menu";
 import { Divider } from "@mui/material";
+import { useNavigate } from "react-router";
 
 const UserMenu = (props: IUserMenu) => {
   const { anchorEl, open, user, handleClose, handleLogout } = props;
 
+  const navigate = useNavigate();
+
   const logout = () => {
     handleLogout();
+    handleClose();
+  }
+
+  const trocarSenha = () => {
+    navigate("/trocar-senha");
     handleClose();
   }
 
@@ -31,7 +39,7 @@ const UserMenu = (props: IUserMenu) => {
       >
         <MenuItem>{user?.username}</MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>Trocar Senha</MenuItem>
+        <MenuItem onClick={trocarSenha}>Trocar Senha</MenuItem>
         <MenuItem onClick={logout}>Logout</MenuItem>
       </Menu>
     </>
