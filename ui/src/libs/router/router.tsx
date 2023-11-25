@@ -5,12 +5,18 @@ import SignIn from '../../components/singin';
 import Dashboard from '../../components/dashboard';
 import Casas from '../../components/casas';
 import Produtos from '../../components/produtos';
+import CriarConta from '../../components/criar-conta';
 
 export const router = createBrowserRouter([
   {
     id: "root",
     path: "/",
     Component: SignIn,
+  },
+  {
+    id: "criar-conta",
+    path: "/criar-conta",
+    Component: CriarConta,
   },
   {
     id: "dashboard",

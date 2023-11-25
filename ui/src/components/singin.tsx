@@ -118,7 +118,7 @@ const SignIn = (props: any) => {
             </Button>
             <Grid container>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/criar-conta" variant="body2">
                   Criar uma conta!
                 </Link>
               </Grid>
