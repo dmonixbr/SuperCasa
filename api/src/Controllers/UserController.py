@@ -57,13 +57,19 @@ def updateUser():
     try:
         currentUser = get_jwt_identity()
         if not currentUser:
-            resposta = createResponse({"message": "Sem altorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
+            resposta = createResponse({"message": "Sem autorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
             return resposta
+        
+        usuarioLogado = UserService.getUserByUsername(currentUser)
 
         id: int = int(request.json.get('id'))
         username:str = request.json.get('username')
         password:str = request.json.get('password')
         oldPassword:str = request.json.get('oldPassword')
+
+        if id != usuarioLogado.id:
+            resposta = createResponse({"message": "Sem autorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
+            return resposta
 
         if not username and not password and not oldPassword and not id:
             resposta = createResponse({"message": "Dados insuficientes"}, HttpResponse.BAD_REQUEST)
