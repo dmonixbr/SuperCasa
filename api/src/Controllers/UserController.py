@@ -22,11 +22,14 @@ def login():
             resposta = createResponse({"id":user.id, "username": user.username, "JWT": access_token}, HttpResponse.SUCCESS)
             return resposta
         else:
-            return jsonify({"message": "Credenciais inválidas"}), HttpResponse.UNAUTHORIZED
+            resposta = createResponse({"message": "Credenciais inválidas"}, HttpResponse.UNAUTHORIZED)
+            return resposta
     except ValueError as e:
-        return jsonify({"error": str(e)}), HttpResponse.BAD_REQUEST
+        resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 @user.route('/', methods=['POST'])
 def createUser():
@@ -41,9 +44,11 @@ def createUser():
         resposta = createResponse({"username": user.username}, HttpResponse.CREATED)
         return resposta
     except ValueError as e:
-        return jsonify({"error": str(e)}), HttpResponse
+        resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 @user.route('/', methods=['PUT'])
 def updateUser():
@@ -54,15 +59,19 @@ def updateUser():
         oldPassword:str = request.json.get('oldPassword')
 
         if not username and not password and not oldPassword and not id:
-            return jsonify({"message": "Dados insuficientes"}), HttpResponse
+            resposta = createResponse({"message": "Dados insuficientes"}, HttpResponse.BAD_REQUEST)
+            return resposta
         
         user = UserService.updateUser(id, username, password, oldPassword)
         if user:
             resposta = createResponse({"username": user.username}, HttpResponse.SUCCESS)
             return resposta
         else:
-            return jsonify({"message": "Usuário não encontrado ou senha inválida!"}), HttpResponse.NOT_FOUND
+            resposta = createResponse({"message": "Usuário não encontrado ou senha inválida!"}, HttpResponse.NOT_FOUND)
+            return resposta
     except ValueError as e:
-        return jsonify({"error": str(e)}), HttpResponse
+        resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
