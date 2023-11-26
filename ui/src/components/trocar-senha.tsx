@@ -3,11 +3,18 @@ import PageLayout from '../shared/page-layout'
 import Box from '@mui/material/Box';
 import { TextField, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
+import { UserContext } from '../libs/context/user-context';
+import userService from '../services/user-service';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
 
 const TrocarSenha = () => {
     const [senha, setSenha] = React.useState<string>("");
     const [senhaRepetida, setSenhaRepetida] = React.useState<string>("");
     const [submitEnabled, setSubmitEnabled] = React.useState<boolean>(false);
+
+    const { user } = React.useContext(UserContext);
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         if (senha === senhaRepetida && senha.length > 0) {
@@ -16,6 +23,29 @@ const TrocarSenha = () => {
             setSubmitEnabled(false);
         }
     }, [senha, senhaRepetida]);
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        try{
+          event.preventDefault();
+          if(user){
+              const data = new FormData(event.currentTarget);
+          
+              const resposta = await userService.updateUser({
+                id: user.id,
+                username: user.username,
+                password: data.get('password') as string,
+                oldPassword: data.get('senha-antiga') as string,
+              });
+              
+              if (!!resposta) {
+                toast.success('Senha trocada com sucesso!');
+                navigate('/produtos');
+              }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
 
     return (
         <PageLayout>
@@ -31,8 +61,7 @@ const TrocarSenha = () => {
                 </Typography>
             <Box 
             component='form'
-            onSubmit={() => {}}
-            noValidate
+            onSubmit={handleSubmit}
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -41,6 +70,16 @@ const TrocarSenha = () => {
                 alignSelf: 'center',
                 width: '100%',
             }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="senha-antiga"
+              label="Senha atual"
+              type="password"
+              id="senha-antiga"
+              autoComplete="senha-atual"
+            />
             <TextField
               margin="normal"
               required
@@ -65,6 +104,7 @@ const TrocarSenha = () => {
               value={senhaRepetida}
               onChange={(event) => setSenhaRepetida(event.target.value)}
             />
+            
             <Button
               type="submit"
               variant="contained"

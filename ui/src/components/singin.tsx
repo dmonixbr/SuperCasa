@@ -60,6 +60,7 @@ const SignIn = (props: any) => {
       
       if (!!resposta) {
         const user = resposta as IUser;
+        localStorage.setItem('token', user.JWT ?? '');
         handleLogin(user);
         navigate('/produtos');
       }
