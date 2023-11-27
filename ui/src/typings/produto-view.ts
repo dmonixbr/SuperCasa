@@ -1,5 +1,5 @@
 export interface IProdutoViewProps {
-    produtoId?: number;
+    produtoId: number | null;
     screenMode: 'view' | 'edit' | 'create';
     open: boolean;
     onClose: () => void;

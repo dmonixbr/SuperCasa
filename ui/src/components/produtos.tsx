@@ -21,8 +21,16 @@ const Produtos = () => {
 		setModalOpen(true);
 	};
 
+	const handleAbrirProduto = (produtoId: number) => {
+		setModalScreenMode("view");
+		setModalProdutoId(produtoId);
+		setModalOpen(true);
+	};
+
 	const handleFecharNovoProduto = () => {
 		setModalOpen(false);
+		setModalScreenMode("create");
+		setModalProdutoId(null);
 	}
 		
 
@@ -58,14 +66,14 @@ const Produtos = () => {
               },
             }}
             disableRowSelectionOnClick
-            onRowClick={(row) => console.log(row)}
+            onRowClick={(row) => handleAbrirProduto(row.row.id as number)}
           />
         </Box>
       </Box>
 			<ProdutoView
 				open={modalOpen}
-				screenMode="edit"
-				produtoId={1}
+				screenMode={modalScreenMode}
+				produtoId={modalProdutoId}
 				onClose={handleFecharNovoProduto} />
     </PageLayout>
   );
