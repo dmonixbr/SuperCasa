@@ -1,5 +1,5 @@
 import {IProduto} from '../../../../typings/produto';
-type DeleteProdutosResponse = IProduto;
+type DeleteProdutoResponse = IProduto;
 
  
-export default DeleteProdutosResponse;
+export default DeleteProdutoResponse;
