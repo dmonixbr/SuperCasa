@@ -13,7 +13,7 @@ const createProduto = async (createProdutoAttributes: CreateProdutoRequest) => {
     let createProdutoResponse : AxiosResponse<CreateProdutoResponse>;
     try {
         createProdutoResponse = await api.Produto.createProduto(createProdutoAttributes);
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error.response.data.error);
         throw error as AxiosError;
     }
@@ -25,7 +25,7 @@ const getProduto = async (id: number) => {
     let getProdutoResponse : AxiosResponse<GetProdutoResponse>;
     try {
         getProdutoResponse = await api.Produto.getProduto(id);
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error.response.data.error);
         throw error as AxiosError;
     }
@@ -37,7 +37,7 @@ const getProdutos = async () => {
     let getProdutosResponse : AxiosResponse<GetProdutosResponse>;
     try {
         getProdutosResponse = await api.Produto.getProdutos();
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error.response.data.error);
         throw error as AxiosError;
     }
@@ -49,7 +49,7 @@ const updateProduto = async (id: number, updateProdutoAttributes: UpdateProdutoR
     let updateProdutoResponse : AxiosResponse<UpdateProdutoResponse>;
     try {
         updateProdutoResponse = await api.Produto.updateProduto(id, updateProdutoAttributes);
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error.response.data.error);
         throw error as AxiosError;
     }
@@ -61,7 +61,7 @@ const deleteProduto = async (id: number) => {
     let deleteProdutoResponse : AxiosResponse<DeleteProdutoResponse>;
     try {
         deleteProdutoResponse = await api.Produto.deleteProduto(id);
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error.response.data.error);
         throw error as AxiosError;
     }

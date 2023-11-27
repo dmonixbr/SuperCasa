@@ -2,11 +2,11 @@ import { AxiosError, AxiosResponse } from 'axios';
 import api from '../libs/api';
 import CreateUserRequest from '../libs/api/requests/user/create-user-request';
 import CreateUserResponse from '../libs/api/responses/user/create-user-response';
-import { toast } from 'react-toastify';
 import LoginUserRequest from '../libs/api/requests/user/login-user-request';
 import LoginUserResponse from '../libs/api/responses/user/login-user-response';
 import UpdateUserRequest from '../libs/api/requests/user/update-user-request';
 import UpdateUserResponse from '../libs/api/responses/user/update-user-response';
+import { toast } from 'react-toastify';
 
 const createUser = async (createUserAttributes: CreateUserRequest): Promise<CreateUserResponse> => {
     let createUserResponse: AxiosResponse<CreateUserResponse>;

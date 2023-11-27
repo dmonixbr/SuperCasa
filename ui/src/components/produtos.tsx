@@ -8,14 +8,41 @@ import produtoSchema from "../libs/schema/produto";
 import { DataGrid, DataGridProps } from "@mui/x-data-grid";
 import { IProduto } from "../typings/produto";
 import ProdutoView from "./produto-view";
+import PrdoutoService from "../services/produto-service";
 
 const Produtos = () => {
 	const [modalOpen, setModalOpen] = React.useState(false);
 	const [modalScreenMode, setModalScreenMode] = React.useState<"view" | "edit" | "create">("create");
 	const [modalProdutoId, setModalProdutoId] = React.useState<number | null>(null);
-  const [produtos, setProdutos] = React.useState<IProduto[]>([
-    { id: 1, nome: "Produto 1", descricao: "produtooooooo", marca: "Marca 1" },
-  ]);
+  const [retornoProdutoModal, setRetornoProdutoModal] = React.useState<IProduto | null>(null);
+  const [produtos, setProdutos] = React.useState<IProduto[]>([]);
+
+  React.useEffect(() => {
+    PrdoutoService.getProdutos().then((produtos) => {
+      setProdutos(produtos);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (!!retornoProdutoModal){
+      const newProdutos = [...produtos];
+      const index = newProdutos.findIndex((produto) => produto.id === retornoProdutoModal?.id);
+  
+      if (index === -1) {
+        newProdutos.push(retornoProdutoModal);
+      } else {
+        newProdutos[index] = retornoProdutoModal;
+      }
+      if(retornoProdutoModal.deleted) {
+        newProdutos.splice(index, 1);
+      }
+  
+      setProdutos(newProdutos);
+      setRetornoProdutoModal(null);
+    }
+  }, [retornoProdutoModal]);
 
 	const handleAbrirNovoProduto = () => {
 		setModalOpen(true);
@@ -74,7 +101,9 @@ const Produtos = () => {
 				open={modalOpen}
 				screenMode={modalScreenMode}
 				produtoId={modalProdutoId}
-				onClose={handleFecharNovoProduto} />
+				onClose={handleFecharNovoProduto}
+        setRetornoProdutoModal={setRetornoProdutoModal}
+        setScreenMode={setModalScreenMode} />
     </PageLayout>
   );
 };
