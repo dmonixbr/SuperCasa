@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 import src.Services.ProdutoService as ProdutoService
 from src.libs.Errors import ResponseException
 import src.libs.HttpResponse as HttpResponse
+from src.libs.RespostaHTTP import createResponse
 
 produto = Blueprint('produto', __name__, 'produto')
 
@@ -15,11 +16,14 @@ def getProdutos():
 
         produtos = ProdutoService.getProdutos(currentUser)
 
-        return jsonify([{"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca, "criadoPor": produto.createdByUserId} for produto in produtos]), 200
+        resposta = createResponse([{"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca} for produto in produtos], 200)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo GET de produto especifico
 @produto.route('/<int:id>', methods=['GET'])
@@ -29,11 +33,14 @@ def getProduto(id):
         currentUser = get_jwt_identity()
 
         produto = ProdutoService.getProdutoById(id, currentUser)
-        return jsonify({"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca, "criadoPor": produto.createdByUserId}), 200
+        resposta = createResponse({"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca}, 200)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoit para o metodo POST de produto
 @produto.route('/', methods=['POST'])
@@ -47,11 +54,14 @@ def createPrduto():
         descricao = request.json.get('descricao')
 
         produto = ProdutoService.createProduto(nome, descricao, marca, currentUser)
-        return jsonify({"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca, "criadoPor": produto.createdByUserId}), 201
+        resposta = createResponse({"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca}, 201)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo PUT de produto
 @produto.route('/<int:id>', methods=['PUT'])
@@ -67,11 +77,14 @@ def updateProduto(id):
         descricao = request.json.get('descricao', produtoRequested.descricao)
 
         produto = ProdutoService.updateProduto(id, nome, descricao, marca, currentUser)
-        return jsonify({"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca, "criadoPor": produto.createdByUserId}), 200
+        resposta = createResponse({"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca}, 200)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
     
 # Endpoint para metodo DELETE de produto
 @produto.route('/<int:id>', methods=['DELETE'])
@@ -81,8 +94,11 @@ def deleteProduto(id):
         currentUser = get_jwt_identity()
 
         produto = ProdutoService.deleteProduto(id, currentUser)
-        return jsonify({"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca, "criadoPor": produto.createdByUserId}), 200
+        resposta = createResponse({"id": produto.id, "nome": produto.nome, "descricao": produto.descricao, "marca": produto.marca}, 200)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
