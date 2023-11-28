@@ -10,13 +10,13 @@ const USER_BASE_URL = '/casa';
 
 const createCasa = async (request: CreateCasaRequest) => axiosInstance.post<CreateCasaResponse>(`${USER_BASE_URL}/`, request);
 
-const getCasa = async (id: number) => axiosInstance.get<GetCasaResponse>(`${USER_BASE_URL}/${id}/`);
+const getCasa = async (id: number) => axiosInstance.get<GetCasaResponse>(`${USER_BASE_URL}/${id}`);
 
 const getCasas = async () => axiosInstance.get<GetCasasResponse>(`${USER_BASE_URL}/`);
 
-const updateCasa = async (id: number, request: UpdateCasaRequest) => axiosInstance.put<UpdateCasaResponse>(`${USER_BASE_URL}/${id}/`, request);
+const updateCasa = async (id: number, request: UpdateCasaRequest) => axiosInstance.put<UpdateCasaResponse>(`${USER_BASE_URL}/${id}`, request);
 
-const deleteCasa = async (id: number) => axiosInstance.delete<UpdateCasaResponse>(`${USER_BASE_URL}/${id}/`);
+const deleteCasa = async (id: number) => axiosInstance.delete<UpdateCasaResponse>(`${USER_BASE_URL}/${id}`);
 
 export default {
     createCasa, 
