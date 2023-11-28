@@ -40,7 +40,6 @@ const SignIn = (props: any) => {
   const [jwtToken, setJwtToken] = React.useState<string | null>(localStorage.getItem('JWT'));
 
   React.useEffect(() => {
-    console.log(jwtToken);
     if (jwtToken) {
       userService
       .validateUser()
@@ -54,6 +53,7 @@ const SignIn = (props: any) => {
 
   React.useEffect(() => {
     if (isSignedIn) {
+      setJwtToken(null);
       navigate('/produtos');
     }
   }, [isSignedIn])

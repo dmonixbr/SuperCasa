@@ -37,7 +37,6 @@ const PageLayout = (props: IPageLayoutProps) => {
 
 
   React.useEffect(() => {
-    console.log(isSignedIn);
     if (!isSignedIn) {
       navigate('/');
     }
