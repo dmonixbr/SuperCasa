@@ -7,6 +7,7 @@ import LoginUserResponse from '../libs/api/responses/user/login-user-response';
 import UpdateUserRequest from '../libs/api/requests/user/update-user-request';
 import UpdateUserResponse from '../libs/api/responses/user/update-user-response';
 import { toast } from 'react-toastify';
+import LogoutUserResponse from '../libs/api/responses/user/logout-user-response';
 
 const createUser = async (createUserAttributes: CreateUserRequest): Promise<CreateUserResponse> => {
     let createUserResponse: AxiosResponse<CreateUserResponse>;
@@ -18,7 +19,7 @@ const createUser = async (createUserAttributes: CreateUserRequest): Promise<Crea
     }
 
     return createUserResponse?.data;
-}
+};
 
 const loginUser = async (loginUserAttributes: LoginUserRequest): Promise<LoginUserResponse> => {
     let loginUserResponse: AxiosResponse<LoginUserResponse>;
@@ -30,7 +31,20 @@ const loginUser = async (loginUserAttributes: LoginUserRequest): Promise<LoginUs
     }
 
     return loginUserResponse?.data;
-}
+};
+
+const logoutUser = async (): Promise<LogoutUserResponse> => {
+    let logoutUserResponse: AxiosResponse<LogoutUserResponse>;
+    try {
+        logoutUserResponse = await api.User.logoutUser();
+        toast.success(logoutUserResponse.data.message);
+    } catch (error: any) {
+        toast.error(error.response.data.error);
+        throw (error as AxiosError);
+    }
+
+    return logoutUserResponse?.data;
+};
 
 const updateUser = async (updateUserAttributes: UpdateUserRequest): Promise<UpdateUserResponse> => {
     let updateUserResponse: AxiosResponse<UpdateUserResponse>;
@@ -42,11 +56,12 @@ const updateUser = async (updateUserAttributes: UpdateUserRequest): Promise<Upda
     }
 
     return updateUserResponse?.data;
-}
+};
 
 const userService = {
     createUser,
     loginUser,
+    logoutUser,
     updateUser
 }
 

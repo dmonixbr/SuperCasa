@@ -6,6 +6,7 @@ import { IUser } from "./typings/user";
 import { UserContext } from "./libs/context/user-context";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import userService from "./services/user-service";
 
 function App() {
   const [isSignedIn, setIsSignedIn] = React.useState(false);
@@ -14,11 +15,18 @@ function App() {
   const handleLogin = (user: IUser) => {
     setUser(user);
     setIsSignedIn(true);
+    localStorage.setItem("token", user.JWT ?? "");
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    setIsSignedIn(false);
+  const handleLogout = async () => {
+    try{
+      setUser(null);
+      setIsSignedIn(false);
+      await userService.logoutUser();
+      localStorage.removeItem("JWT");
+    } catch (error: any) {
+      console.log(error);
+    }
   };
 
   return (

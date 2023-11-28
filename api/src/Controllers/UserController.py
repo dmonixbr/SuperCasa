@@ -4,7 +4,7 @@ import src.Services.UserService as UserService
 import src.libs.HttpResponse as HttpResponse
 from datetime import timedelta
 from src.libs.RespostaHTTP import createResponse
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, unset_jwt_cookies
 
 user = Blueprint('user', __name__, 'user')
 
@@ -23,7 +23,7 @@ def login():
             resposta = createResponse({"id":user.id, "username": user.username, "JWT": access_token}, HttpResponse.SUCCESS)
             return resposta
         else:
-            resposta = createResponse({"message": "Credenciais inválidas"}, HttpResponse.UNAUTHORIZED)
+            resposta = createResponse({"error": "Credenciais inválidas"}, HttpResponse.UNAUTHORIZED)
             return resposta
     except ValueError as e:
         resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
@@ -39,7 +39,7 @@ def createUser():
         password:str = request.json.get('password')
 
         if not username or not password:
-            return jsonify({"message": "Dados insuficientes"}), HttpResponse
+            return jsonify({"error": "Dados insuficientes"}), HttpResponse
         
         user = UserService.createUser(username, password)
         resposta = createResponse({"username": user.username}, HttpResponse.CREATED)
@@ -57,7 +57,7 @@ def updateUser():
     try:
         currentUser = get_jwt_identity()
         if not currentUser:
-            resposta = createResponse({"message": "Sem autorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
+            resposta = createResponse({"error": "Sem autorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
             return resposta
         
         usuarioLogado = UserService.getUserByUsername(currentUser)
@@ -68,11 +68,11 @@ def updateUser():
         oldPassword:str = request.json.get('oldPassword')
 
         if id != usuarioLogado.id:
-            resposta = createResponse({"message": "Sem autorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
+            resposta = createResponse({"error": "Sem autorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
             return resposta
 
         if not username and not password and not oldPassword and not id:
-            resposta = createResponse({"message": "Dados insuficientes"}, HttpResponse.BAD_REQUEST)
+            resposta = createResponse({"error": "Dados insuficientes"}, HttpResponse.BAD_REQUEST)
             return resposta
         
         user = UserService.updateUser(id, username, password, oldPassword)
@@ -80,8 +80,27 @@ def updateUser():
             resposta = createResponse({"username": user.username}, HttpResponse.SUCCESS)
             return resposta
         else:
-            resposta = createResponse({"message": "Usuário não encontrado ou senha inválida!"}, HttpResponse.NOT_FOUND)
+            resposta = createResponse({"error": "Usuário não encontrado ou senha inválida!"}, HttpResponse.NOT_FOUND)
             return resposta
+    except ValueError as e:
+        resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
+        return resposta
+    except Exception as e:
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
+    
+@user.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    try:
+        currentUser = get_jwt_identity()
+        if not currentUser:
+            resposta = createResponse({"error": "Sem autorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
+            return resposta
+        
+        resposta = createResponse({"message": "Logout realizado com sucesso!"}, HttpResponse.SUCCESS)
+        unset_jwt_cookies(resposta)
+        return resposta
     except ValueError as e:
         resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
         return resposta
