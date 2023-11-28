@@ -1,8 +1,9 @@
 import { IProdutoCasa } from "./produto";
 
 export interface ICasa{
-    id: number;
+    id?: number;
     nome: string;
-    descricao: string;
+    descricao?: string;
     produtos?: IProdutoCasa[];
+    deleted? : boolean;
 }
