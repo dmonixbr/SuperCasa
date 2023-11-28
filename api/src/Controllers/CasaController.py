@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 import src.libs.HttpResponse as HttpResponse
 from src.libs.Errors import ResponseException
 import src.Services.CasaService as CasaService
+from src.libs.RespostaHTTP import createResponse
 
 casa = Blueprint('casa', __name__, 'casa')
 
@@ -14,12 +15,15 @@ def get_casas():
         currentUser = get_jwt_identity()
         
         casas = CasaService.getCasas(currentUser)
-        return jsonify([{"id": casa.id, "nome": casa.nome, "descricao": casa.descricao} for casa in casas]), 200
+        resposta = createResponse([{"id": casa.id, "nome": casa.nome, "descricao": casa.descricao} for casa in casas], HttpResponse.SUCCESS)
+        return resposta
     
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo GET de casa especifica
 @casa.route('/<int:id>', methods=['GET'])
@@ -29,16 +33,14 @@ def get_casa(id):
         currentUser = get_jwt_identity()
 
         casa = CasaService.getCasaById(id, currentUser)
-        return jsonify({
-            "id": casa.id, 
-            "nome": casa.nome, 
-            "descricao": casa.descricao,
-            "produtos": casa.getProdutos()
-            }), 200
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}, HttpResponse.SUCCESS)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo Post de casa
 @casa.route('/', methods=['POST'])
@@ -52,11 +54,14 @@ def createCasa():
         descricao = data['descricao']
         
         casa = CasaService.createCasa(nome, descricao, currentUser)
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 201
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}, HttpResponse.CREATED)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo PUT de casa
 @casa.route('/<int:id>', methods=['PUT'])
@@ -69,11 +74,14 @@ def updateCasa(id):
         descricao: str = request.json.get('descricao')
         
         casa = CasaService.updateCasa(id, nome, descricao, currentUser)
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 200
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}, HttpResponse.SUCCESS)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo DELETE de casa
 @casa.route('/<int:id>', methods=['DELETE'])
@@ -83,11 +91,14 @@ def deleteCasa(id):
         currentUser = get_jwt_identity()
 
         casa = CasaService.deleteCasa(id, currentUser)
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}), 200
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao}, HttpResponse.SUCCESS)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo adicionarProduto a casa
 @casa.route('/<int:id>/adicionarProduto', methods=['PUT'])
@@ -101,11 +112,14 @@ def adcionarProdutoCasa(id):
         quantidadeReal = int(request.json.get('quantidadeReal'))
         
         casa = CasaService.adicionarProdutoCasa(id, produtoId, quantidadeDesejada, quantidadeReal, currentUser)
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}, HttpResponse.SUCCESS)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo removeProduto a casa
 @casa.route('/<int:id>/removerProduto', methods=['PUT'])
@@ -117,11 +131,14 @@ def removeProdutoCasa(id):
         produtoId = request.json.get('produtoId')
 
         casa = CasaService.removeProdutoCasa(id, produtoId, currentUser)
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}, HttpResponse.SUCCESS)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo somaQuantidadeProduto a casa
 @casa.route('/<int:id>/somaQuantidadeProduto', methods=['PUT'])
@@ -134,11 +151,14 @@ def somaQuantidadeProduto(id):
         quantidadeAMais = int(request.json.get('quantidadeAMais'))
 
         casa = CasaService.somaQuantidadeProduto(id, produtoId, quantidadeAMais, currentUser)
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}, HttpResponse.SUCCESS)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
 
 # Endpoint para o metodo subtraiQuantidadeProduto a casa
 @casa.route('/<int:id>/subtraiQuantidadeProduto', methods=['PUT'])
@@ -151,11 +171,14 @@ def subtraiQuantidadeProduto(id):
         quantidadeAMenos = request.json.get('quantidadeAMenos')
 
         casa = CasaService.subtraiQuantidadeProduto(id, produtoId, quantidadeAMenos, currentUser)
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}, HttpResponse.SUCCESS)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
     
 
 # Endpoint para o metodo updateProdutoCasa a casa
@@ -171,9 +194,11 @@ def updateProdutoCasa(id):
         quantidadeReal = request.json.get('quantidadeReal', relacao.quantidade_real)
 
         casa = CasaService.updateProdutoCasa(relacao, quantidadeDesejada, quantidadeReal, currentUser)
-
-        return jsonify({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}), 200
+        resposta = createResponse({"id": casa.id, "nome": casa.nome, "descricao": casa.descricao, "produtos": casa.getProdutos()}, HttpResponse.SUCCESS)
+        return resposta
     except ResponseException as e:
-        return e.Response()
+        resposta = createResponse({"error": f"{e.getModulo}.{e.getArea}: {e.getMensagem}"}, e.getTipo())
+        return resposta
     except Exception as e:
-        return jsonify({"error": str(e)}), HttpResponse.INTERNAL_SERVER_ERROR
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
