@@ -8,6 +8,7 @@ import UpdateUserRequest from '../libs/api/requests/user/update-user-request';
 import UpdateUserResponse from '../libs/api/responses/user/update-user-response';
 import { toast } from 'react-toastify';
 import LogoutUserResponse from '../libs/api/responses/user/logout-user-response';
+import ValidateUserResponse from '../libs/api/responses/user/validate-user-response';
 
 const createUser = async (createUserAttributes: CreateUserRequest): Promise<CreateUserResponse> => {
     let createUserResponse: AxiosResponse<CreateUserResponse>;
@@ -58,11 +59,24 @@ const updateUser = async (updateUserAttributes: UpdateUserRequest): Promise<Upda
     return updateUserResponse?.data;
 };
 
+const validateUser = async (): Promise<ValidateUserResponse> => {
+    let validateUserResponse: AxiosResponse<ValidateUserResponse>;
+    try {
+        validateUserResponse = await api.User.validateUser();
+    } catch (error: any) {
+        toast.error(error.response.data.error);
+        throw (error as AxiosError);
+    }
+
+    return validateUserResponse?.data;
+};
+
 const userService = {
     createUser,
     loginUser,
     logoutUser,
-    updateUser
+    updateUser,
+    validateUser
 }
 
 export default userService;

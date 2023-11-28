@@ -1,5 +1,5 @@
 import "./App.css";
-import { RouterProvider } from "react-router-dom";
+import { RouterProvider, useNavigate } from "react-router-dom";
 import { router } from "./libs/router/router";
 import React from "react";
 import { IUser } from "./typings/user";
@@ -12,10 +12,16 @@ function App() {
   const [isSignedIn, setIsSignedIn] = React.useState(false);
   const [user, setUser] = React.useState<IUser | null>(null);
 
+
+  const handleValidateUser = (user: IUser) => {
+    setUser(user);
+    setIsSignedIn(true);
+  }
+
   const handleLogin = (user: IUser) => {
     setUser(user);
     setIsSignedIn(true);
-    localStorage.setItem("token", user.JWT ?? "");
+    localStorage.setItem("JWT", user.JWT!);
   };
 
   const handleLogout = async () => {
@@ -31,7 +37,7 @@ function App() {
 
   return (
     <UserContext.Provider
-      value={{ user, handleLogin, isSignedIn, handleLogout }}
+      value={{ user, handleLogin, isSignedIn, handleLogout, handleValidateUser }}
     >
       <ToastContainer
         position="top-right"

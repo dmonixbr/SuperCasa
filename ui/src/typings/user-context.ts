@@ -5,4 +5,5 @@ export interface IUserContext {
     handleLogin: (user: IUser) => void;
     isSignedIn: boolean;
     handleLogout: () => void;
+    handleValidateUser: (user: IUser) => void;
 }

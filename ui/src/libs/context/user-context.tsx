@@ -7,4 +7,5 @@ export const UserContext = React.createContext<IUserContext>({
     handleLogin: (user: IUser) => { },
     isSignedIn: false,
     handleLogout: () => { },
+    handleValidateUser: (user: IUser) => {}
 });

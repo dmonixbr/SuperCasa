@@ -6,6 +6,7 @@ import LoginUserResponse from '../responses/user/login-user-response';
 import LogoutUserResponse from '../responses/user/logout-user-response';
 import UpdateUserRequest from '../requests/user/update-user-request';
 import UpdateUserResponse from '../responses/user/update-user-response';
+import ValidateUserResponse from '../responses/user/validate-user-response';
 
 const USER_BASE_URL = '/user';
 
@@ -17,4 +18,6 @@ const logoutUser = async () => axiosInstance.post<LogoutUserResponse>(`${USER_BA
 
 const updateUser = async (request: UpdateUserRequest) => axiosInstance.put<UpdateUserResponse>(`${USER_BASE_URL}/`, request);
 
-export default {createUser, loginUser, logoutUser, updateUser};
+const validateUser = async () => axiosInstance.post<ValidateUserResponse>(`${USER_BASE_URL}/validate`);
+
+export default {createUser, loginUser, logoutUser, updateUser, validateUser};

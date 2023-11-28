@@ -36,15 +36,27 @@ const defaultTheme = createTheme();
 
 const SignIn = (props: any) => {
 
-  const { isSignedIn } = React.useContext(UserContext);
+  const { handleLogin, isSignedIn, handleValidateUser } = React.useContext(UserContext);
+  const [jwtToken, setJwtToken] = React.useState<string | null>(localStorage.getItem('JWT'));
+
+  React.useEffect(() => {
+    console.log(jwtToken);
+    if (jwtToken) {
+      userService
+      .validateUser()
+      .then((res) => {
+        handleValidateUser({...res, JWT: jwtToken});
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
+  }, [jwtToken]);
 
   React.useEffect(() => {
     if (isSignedIn) {
       navigate('/produtos');
     }
-  }, [])
-
-  const { handleLogin } = React.useContext(UserContext);
+  }, [isSignedIn])
 
   const navigate = useNavigate();
 

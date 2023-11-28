@@ -107,3 +107,22 @@ def logout():
     except Exception as e:
         resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
         return resposta
+    
+@user.route('/validate', methods=['POST'])
+@jwt_required()
+def validate():
+    try:
+        currentUser = get_jwt_identity()
+        if not currentUser:
+            resposta = createResponse({"error": "Sem autorização para realizar alteração"}, HttpResponse.UNAUTHORIZED)
+            return resposta
+        
+        user = UserService.getUserByUsername(currentUser)
+        resposta = createResponse({"id":user.id, "username": user.username}, HttpResponse.SUCCESS)
+        return resposta
+    except ValueError as e:
+        resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
+        return resposta
+    except Exception as e:
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
