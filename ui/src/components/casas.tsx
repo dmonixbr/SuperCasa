@@ -9,11 +9,14 @@ import casaService from "../services/casa-service";
 import casasStyle from "../styles/casas";
 import casaSchema from "../libs/schema/casa";
 import ModalNovaCasa from "./modal-nova-casa";
+import { useNavigate } from "react-router";
 
 const Casas = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [retornoPaginaCasa, setRetornoPaginaCasa] = React.useState<ICasa | null>(null);
   const [casas, setCasas] = React.useState<ICasa[]>([]);
+
+	const navigate = useNavigate();
 
   React.useEffect(() => {
     casaService.getCasas().then((casas) => {
@@ -47,6 +50,7 @@ const Casas = () => {
 	};
 
 	const handleAbrirCasa = (id: number) => {
+		navigate(`/casa/${id}`);
 	}
 
 	const handleFecharNovoProduto = () => {

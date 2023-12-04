@@ -19,7 +19,7 @@ export const MainListItems = () => {
     navigate('/produtos')
   };
   const handleCasas = () => {
-    navigate('/casas')
+    navigate('/casa')
   };
 
   return (

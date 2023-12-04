@@ -7,6 +7,7 @@ import Casas from '../../components/casas';
 import Produtos from '../../components/produtos';
 import CriarConta from '../../components/criar-conta';
 import TrocarSenha from '../../components/trocar-senha';
+import CasaDetalhes from '../../components/casa-detalhes';
 
 export const router = createBrowserRouter([
   {
@@ -31,8 +32,13 @@ export const router = createBrowserRouter([
   },
   {
     id: "casas",
-    path: "/casas",
+    path: "/casa",
     Component: Casas,
+  },
+  {
+    id: "casa-detalhes",
+    path: "/casa/:id",
+    Component: CasaDetalhes,
   },
   {
     id: "produtos",
