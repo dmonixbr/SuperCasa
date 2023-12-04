@@ -63,5 +63,3 @@ def test_error_update(client):
 def test_delete_user_not_existent(client):
     with pytest.raises(ValueError) as exc_info:
         user = UserService.deleteUser(1)
-    
-
