@@ -13,9 +13,6 @@ def getUserById(id: int) -> User:
 def getUserByUsername(username: str) -> User:
     return User.query.filter_by(username=username).first()
 
-def getUsers() -> list:
-    return User.query.all()
-
 def createUser(username: str, password: str) -> User:
     user = User(username=username, password=password)
     db.session.add(user)
