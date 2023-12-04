@@ -23,9 +23,6 @@ def getUserById(id) -> UserRepository.User:
 def getUserByUsername(username) -> UserRepository.User:
     return UserRepository.getUserByUsername(username)
 
-def getUsers() -> list:
-    return UserRepository.getUsers()
-
 def _validatePassword(user: UserRepository.User, password: str) -> bool:
     if user:
         return bcrypt.check_password_hash(user.password, password)
@@ -57,4 +54,3 @@ def deleteUser(id: int) -> UserRepository.User:
     
     raise ValueError('Usuário não encontrado')
         
-            
