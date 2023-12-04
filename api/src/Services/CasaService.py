@@ -65,7 +65,7 @@ def adicionarProdutoCasa(idCasa: int, idProduto: int, quantidadeDesejada: int, q
     if not idCasa or not idProduto:
         raise ResponseException('id da casa ou do produto são obrigatórios!', HttpResponse.BAD_REQUEST, 'Service', 'Casa.adicionarProdutoCasa')
     
-    if not quantidadeDesejada and not quantidadeReal:
+    if not quantidadeDesejada or not quantidadeReal:
         raise ResponseException('Quantidade desejada e quantidade real são obrigatórios!', HttpResponse.BAD_REQUEST, 'Service', 'Casa.adicionarProdutoCasa')
     
     if quantidadeDesejada < 1 or quantidadeReal < 0:
@@ -95,7 +95,7 @@ def removeProdutoCasa(idCasa: int, idProduto: int, currentUser: str) -> CasaRepo
         if produto_as.produto_id == idProduto:
             return CasaRepository.removeProdutoCasa(casa, produto)
 
-    return CasaRepository.removeProdutoCasa(casa, produto)
+    raise ResponseException('Produto não presente na lista da casa', HttpResponse.NOT_FOUND, 'Service', 'Casa.removeProdutoCasa')
 
 def somaQuantidadeProduto(idCasa: int, idProduto: int, quantidadeAMais: int, currentUser: str) -> CasaRepository.Casa:
     if not idCasa or not idProduto:
