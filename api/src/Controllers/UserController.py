@@ -42,7 +42,7 @@ def createUser():
             return jsonify({"error": "Dados insuficientes"}), HttpResponse
         
         user = UserService.createUser(username, password)
-        resposta = createResponse({"username": user.username}, HttpResponse.CREATED)
+        resposta = createResponse({"username": user.username, "id": user.id}, HttpResponse.CREATED)
         return resposta
     except ValueError as e:
         resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
@@ -120,6 +120,20 @@ def validate():
         user = UserService.getUserByUsername(currentUser)
         resposta = createResponse({"id":user.id, "username": user.username}, HttpResponse.SUCCESS)
         return resposta
+    except ValueError as e:
+        resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
+        return resposta
+    except Exception as e:
+        resposta = createResponse({"error": str(e)}, HttpResponse.INTERNAL_SERVER_ERROR)
+        return resposta
+    
+@user.route('/<int:id>', methods=['DELETE'])
+def deleteUser(id):
+    try:
+        user = UserService.deleteUser(id)
+        if user:
+            resposta = createResponse({"sucesso": f"Usuário {user.username} deletado com sucesso!"}, HttpResponse.SUCCESS)
+            return resposta
     except ValueError as e:
         resposta = createResponse({"error": str(e)}, HttpResponse.BAD_REQUEST)
         return resposta

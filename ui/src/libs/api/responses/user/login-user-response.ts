@@ -1,6 +1,6 @@
 import { IUser } from '../../../../typings/user';
 
-type LoginUserResponse = Omit<IUser, 'id' |  'username' | 'passwowrd'>;
+type LoginUserResponse = Pick<IUser, 'id' |  'username' | 'JWT'>;
 
  
 export default LoginUserResponse;

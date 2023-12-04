@@ -9,6 +9,7 @@ import UpdateUserResponse from '../libs/api/responses/user/update-user-response'
 import { toast } from 'react-toastify';
 import LogoutUserResponse from '../libs/api/responses/user/logout-user-response';
 import ValidateUserResponse from '../libs/api/responses/user/validate-user-response';
+import DeleteUserResponse from '../libs/api/responses/user/delete-user-response';
 
 const createUser = async (createUserAttributes: CreateUserRequest): Promise<CreateUserResponse> => {
     let createUserResponse: AxiosResponse<CreateUserResponse>;
@@ -71,12 +72,26 @@ const validateUser = async (): Promise<ValidateUserResponse> => {
     return validateUserResponse?.data;
 };
 
+const deleteUser = async (id:number) => {
+    let deleteUserResponse: AxiosResponse<DeleteUserResponse>;
+    try {
+        deleteUserResponse = await api.User.deleteUser(id);
+        toast.success(deleteUserResponse.data.sucesso);
+    } catch (error: any) {
+        toast.error(error.response.data.error);
+        throw (error as AxiosError);
+    }
+
+    return deleteUserResponse?.data;
+}
+
 const userService = {
     createUser,
     loginUser,
     logoutUser,
     updateUser,
-    validateUser
+    validateUser,
+    deleteUser
 }
 
 export default userService;
