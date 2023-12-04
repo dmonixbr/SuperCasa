@@ -1,6 +1,6 @@
 import src.Services.UserService as UserService
 import pytest
-from src import create_app, db_test as db
+from src import create_app, db
 
 @pytest.fixture
 def app():
@@ -52,16 +52,16 @@ def test_update_user(client):
 
 def test_error_login(client):
     user = UserService.createUser("User Teste", "123456")
-    login = UserService.login("User Teste", "5678")
-    assert login == None
+    with pytest.raises(ValueError) as exc_info:
+        login = UserService.login("User Teste", "5678")
 
 def test_error_update(client):
     user = UserService.createUser("User Teste", "123456")
-    user = UserService.updateUser(user.id, "User Teste 2", "123456", "5678")
-    assert user == None
+    with pytest.raises(ValueError) as exc_info:
+        user = UserService.updateUser(user.id, "User Teste 2", "123456", "5678")
 
 def test_delete_user_not_existent(client):
-    user = UserService.deleteUser(1)
-    assert user == None
+    with pytest.raises(ValueError) as exc_info:
+        user = UserService.deleteUser(1)
     
 
