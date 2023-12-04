@@ -295,4 +295,16 @@ def test_update_produto_casa_qtd_a_menos_insuficiente(client, user):
 
     assert exc_info.value.mensagem == "Quantidade desejada não pode ser menor que 1 ou quantidade real não pode ser menor que 0"
 
+def test_valida_casa_usuario_sem_casa(client, user):
+    with pytest.raises(ResponseException) as exc_info:
+        casa = CasaService._validaCasaUsuario(None, user.username)
 
+    assert exc_info.value.mensagem == "Casa não encontrada"
+
+def test_valida_casa_usuario_diferente(client, user):
+    with pytest.raises(ResponseException) as exc_info:
+        user2 = UserRepository.createUser(username="User Teste 2", password="123456")
+        casa = CasaService.createCasa("Casa 1", "Casa 1", "User Teste 2")
+        casa = CasaService._validaCasaUsuario(casa, user.username)
+
+    assert exc_info.value.mensagem == "Casa não pertence ao usuário"

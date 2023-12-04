@@ -82,3 +82,7 @@ def test_update_password(client):
     user = UserService.createUser("User Teste", "123456")
     user = UserService.updateUser(user.id, None, "234", "123456")
     assert user.password != "123456"
+
+def test_validate_password(client):
+    with pytest.raises(ValueError) as exc_info:
+        UserService._validatePassword(None, '123456')
