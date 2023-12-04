@@ -158,6 +158,22 @@ cython_debug/
 # Ariquvos de banco de dados
 *.sqlite
 
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+/ui/node_modules
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env
+npm-debug.log
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore

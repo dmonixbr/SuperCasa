@@ -44,6 +44,7 @@ def test_get_casa_by_id(client):
     casa = CasaRepository.getCasaById(casa.id)
     assert casa.nome == "Casa 1"
     assert casa.descricao == "Casa 1"
+    assert casa.getProdutos() == []
 
 def test_adiciona_produto_casa(client):
     casa = CasaRepository.createCasa("Casa 1", "Casa 1", 1)
@@ -54,6 +55,27 @@ def test_adiciona_produto_casa(client):
     assert casa.produtos_associados[0].casa_id == casa.id
     assert casa.produtos_associados[0].quantidade_desejada == 1
     assert casa.produtos_associados[0].quantidade_real == 1
+    assert casa.getProdutos() == [{
+        "id": produto.id,
+        "nome": produto.nome,
+        "marca": produto.marca,
+        "descricao": produto.descricao,
+        "quantidade_desejada": 1,
+        "quantidade_real": 1
+    }]
+
+def test_adiciona_produto_casa_existente(client):
+    casa = CasaRepository.createCasa("Casa 1", "Casa 1", 1)
+    produto = ProdutoRepository.createProduto("Produto 1", "Produto 1", "MARCA", 1)
+    casa = CasaRepository.adicionaProdutoCasa(casa, produto.id, 1, 1, None)
+    casa = CasaRepository.removeProdutoCasa(casa, produto)
+    relacao = CasaRepository.getRelacaoProdutoCasa(casa.id, produto.id)
+    casa = CasaRepository.adicionaProdutoCasa(casa, produto.id, 2, 0, relacao)
+    assert len(casa.produtos_associados) == 1
+    assert casa.produtos_associados[0].produto_id == produto.id
+    assert casa.produtos_associados[0].casa_id == casa.id
+    assert casa.produtos_associados[0].quantidade_desejada == 2
+    assert casa.produtos_associados[0].quantidade_real == 0
 
 def test_soma_quantidade_produto(client):
     casa = CasaRepository.createCasa("Casa 1", "Casa 1", 1)
