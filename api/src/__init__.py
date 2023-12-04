@@ -18,7 +18,6 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(metadata=metadata)
-db_test = SQLAlchemy(metadata=metadata)
 jwt = JWTManager()
 bcrypt = Bcrypt()
 cors = CORS()
@@ -40,8 +39,8 @@ def create_app(database_type='production'):
     
     if database_type == 'test':
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tests.sqlite')
-        db_test.init_app(app)
-        migrate.init_app(app, db_test, render_as_batch=True)
+        db.init_app(app)
+        migrate.init_app(app, db, render_as_batch=True)
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
         db.init_app(app)

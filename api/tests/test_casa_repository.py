@@ -1,7 +1,7 @@
 import src.Repositories.CasaRepository as CasaRepository
 import src.Repositories.ProdutoRepository as ProdutoRepository
 import pytest
-from src import create_app, db_test as db
+from src import create_app, db
 
 @pytest.fixture
 def app():
